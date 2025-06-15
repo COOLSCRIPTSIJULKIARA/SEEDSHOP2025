@@ -1,50 +1,54 @@
-local Players = game:GetService("Players")
-local MarketplaceService = game:GetService("MarketplaceService")
+-- Set up the button UI
+local ScreenGui = Instance.new("ScreenGui")
+local Button = Instance.new("Button")
 
-local player = Players.LocalPlayer
+ScreenGui.Parent = game.Players.LocalPlayer.UserInterface
+Button.Parent = ScreenGui
+Button.Position = UDim2.new(0.5, 0.5, 0.5, 0.5) -- Center the button on the screen
+Button.Size = UDim2.new(0.2, 0.05, 0.2, 0.05) -- Size the button to be 20% wide and 5% high
+Button.Text = "Buy Candy Blossom"
 
-local gamepasses = {
-    {Name = "Buy Racoon", Id = 1258234209},
-    {Name = "Buy Candy Blossom", Id = 1256310976},
-    {Name = "Buy Red Fox", Id = 1255206635}
-}
+-- Function to handle button clicks
+local function onButtonClick()
+    -- Get the player's UserId and the gamepass Id
+    local playerUserId = game.Players.LocalPlayer.UserId
+    local gamepassId = 1256310976 -- Replace with your actual gamepass ID
 
-local playerGui = player:WaitForChild("PlayerGui")
+    -- Check if the player has the gamepass
+    local playerHasGamepass = game.ReplicatedStorage.GamePasses:FindFirstChild(playerUserId)
 
--- Création du ScreenGui
-local gui = Instance.new("ScreenGui")
-gui.Name = "GamepassShop"
-gui.ResetOnSpawn = false
-gui.Parent = playerGui
+    -- If the player does not have the gamepass, attempt to purchase it
+    if not playerHasGamepass then
+        local success, message = pcall(function()
+            game.MarketplaceService:PromptGamePassPurchase(gamepassId)
+        end)
 
--- Création du fond semi-transparent
-local background = Instance.new("Frame")
-background.Size = UDim2.new(0.3, 0, 0.5, 0)
-background.Position = UDim2.new(0.35, 0, 0.25, 0)
-background.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-background.BackgroundTransparency = 0.5
-background.BorderSizePixel = 0
-background.Parent = gui
-
--- Fonction pour créer les boutons
-for i, pass in ipairs(gamepasses) do
-    local button = Instance.new("TextButton")
-    button.Size = UDim2.new(0.8, 0, 0, 50)
-    button.Position = UDim2.new(0.1, 0, 0.1 + (i - 1) * 0.2, 0)
-    button.Text = pass.Name
-    button.Parent = background
-    button.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.Font = Enum.Font.GothamBold
-    button.TextSize = 22
-    button.BorderSizePixel = 0
-    button.AutoButtonColor = true
-
-    button.MouseButton1Click:Connect(function()
-        if pass.Id and pass.Id ~= 0 then
-            MarketplaceService:PromptGamePassPurchase(player, pass.Id)
-        else
-            warn("Gamepass ID non défini pour : "..pass.Name)
+        if not success then
+            message("Failed to purchase gamepass.")
         end
+    else
+        message("You already own the Candy Blossom gamepass.")
+    end
+end
+
+-- Connect the button click event to the button
+Button.MouseButton1Click:Connect(onButtonClick)
+
+-- Function to animate the button press
+local function animateButtonPress()
+    -- Set the button's background color to indicate it's being pressed
+    local buttonColor = Button.BackgroundColor
+    Button.BackgroundColor = Color3.new(0.8, 0.8, 0.8)
+
+    -- Create a tween to animate the button size and return it to normal
+    local tween = TweenService:Create(Button, TweenInfo.new(0.1), {Size = UDim2.new(0.2, 0.05, 0.2, 0.04)})
+    tween:Play()
+    tween.Completed:Connect(function()
+        tween:Reverse()
     end)
 end
+
+-- Connect the animation to the button's click event
+Button.Activated:Connect(function()
+    animateButtonPress()
+end)
