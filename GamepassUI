@@ -1,50 +1,30 @@
-local Players = game:GetService("Players")
-local MarketplaceService = game:GetService("MarketplaceService")
+buttonCorner.Parent = button
 
-local player = Players.LocalPlayer
+-- Frame Corner
+local frameCorner = Instance.new("UICorner")
+frameCorner.CornerRadius = UDim.new(0, 18)
+frameCorner.Parent = frame
 
-local gamepasses = {
-    {Name = "Buy Racoon", Id = 1258234209},
-    {Name = "Buy Candy Blossom", Id = 1256310976},
-    {Name = "Buy Red Fox", Id = 1255206635}
-}
+-- Button Glow
+local buttonStroke = Instance.new("UIStroke")
+buttonStroke.Parent = button
+buttonStroke.Color = Color3.fromRGB(255, 211, 240)
+buttonStroke.Thickness = 2
+buttonStroke.Transparency = 0.2
 
-local playerGui = player:WaitForChild("PlayerGui")
+-- Button Click Functionality
+button.MouseButton1Click:Connect(function()
+    MarketplaceService:PromptGamePassPurchase(player, GAMEPASS_ID)
+end)
 
--- Création du ScreenGui
-local gui = Instance.new("ScreenGui")
-gui.Name = "GamepassShop"
-gui.ResetOnSpawn = false
-gui.Parent = playerGui
-
--- Création du fond semi-transparent
-local background = Instance.new("Frame")
-background.Size = UDim2.new(0.3, 0, 0.5, 0)
-background.Position = UDim2.new(0.35, 0, 0.25, 0)
-background.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-background.BackgroundTransparency = 0.5
-background.BorderSizePixel = 0
-background.Parent = gui
-
--- Fonction pour créer les boutons
-for i, pass in ipairs(gamepasses) do
-    local button = Instance.new("TextButton")
-    button.Size = UDim2.new(0.8, 0, 0, 50)
-    button.Position = UDim2.new(0.1, 0, 0.1 + (i - 1) * 0.2, 0)
-    button.Text = pass.Name
-    button.Parent = background
-    button.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.Font = Enum.Font.GothamBold
-    button.TextSize = 22
-    button.BorderSizePixel = 0
-    button.AutoButtonColor = true
-
-    button.MouseButton1Click:Connect(function()
-        if pass.Id and pass.Id ~= 0 then
-            MarketplaceService:PromptGamePassPurchase(player, pass.Id)
-        else
-            warn("Gamepass ID non défini pour : "..pass.Name)
-        end
-    end)
-end
+-- Optional: Button Hover effect
+button.MouseEnter:Connect(function()
+    button.BackgroundColor3 = Color3.fromRGB(255, 130, 210)
+end)
+button.MouseLeave:Connect(function()
+    button.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+end)
+button.MouseLeave:Connect(function()
+    button.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+end)on.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+end)
